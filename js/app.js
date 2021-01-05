@@ -18,148 +18,108 @@
  *
  */
 
+// Reset page on refresh: Scrolls to top, and selects section 1 in nav
 window.onload = function () {
   window.scroll({
     top: 0,
     behavior: "smooth",
   });
   setTimeout(function () {
-    navLink1.classList.add("active-nav");
-    navLink1.classList.remove("menu__link");
+    navLinks[0].classList.add("active-nav");
+    navLinks[0].classList.remove("menu__link");
   }, 500);
 };
 
 const nav = document.getElementById("navbar__list");
 const headerText = document.querySelectorAll("h2");
 const navItemsDocFrag = document.createDocumentFragment();
-const section1 = document.getElementById("section1");
-const section2 = document.getElementById("section2");
-const section3 = document.getElementById("section3");
-let sectionNumber = 0;
-
-function scroll1() {
-  section1.scrollIntoView({
-    behavior: "smooth",
-  });
-}
-function scroll2() {
-  section2.scrollIntoView({
-    behavior: "smooth",
-  });
-}
-function scroll3() {
-  section3.scrollIntoView({
-    behavior: "smooth",
-  });
-}
+const allSections = document.querySelectorAll("section");
 
 // Builds nav items and adds to ul
 for (let i = 0; i < headerText.length; i++) {
   const navItem = document.createElement("li");
   const navItemLink = document.createElement("a");
   const listItem = headerText[i].textContent;
-  sectionNumber += 1;
 
   navItemLink.textContent = listItem;
   navItemLink.setAttribute("class", "menu__link");
   navItemLink.setAttribute("style", "cursor: pointer");
-  navItemLink.setAttribute("onclick", `scroll${i + 1}()`);
+  //   navItemLink.setAttribute("onclick", `scroll${i + 1}()`);
+  navItemLink.setAttribute("data-nav", `Section ${i + 1}`);
   navItem.appendChild(navItemLink);
   navItemsDocFrag.appendChild(navItem);
 }
 nav.appendChild(navItemsDocFrag);
 
-const navLinks = [...document.querySelectorAll(".menu__link")];
-const navLink1 = navLinks[0];
-const navLink2 = navLinks[1];
-const navLink3 = navLinks[2];
+// Helper Functions
 
-let section1Bound;
-let section2Bound;
-let section3Bound;
+//Checks if any portion of a section is visible.
+// *** Got some help online for this one ***
+function isVisible(el) {
+  const rect = el.getBoundingClientRect();
+  const windowHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  const vertInView = rect.top <= windowHeight && rect.top + rect.height >= 0;
+  const horInView = rect.left <= windowWidth && rect.left + rect.width >= 0;
+
+  return vertInView && horInView;
+}
+
+// Checks if top of section is near top of viewport
+function headerNearTop(el) {
+  const rect = el.getBoundingClientRect();
+  const headerNearTop = rect.top >= 0 && rect.top <= 100;
+
+  return headerNearTop;
+}
+
+const navLinks = document.querySelectorAll(".menu__link");
 
 // Scroll event to update active section inside of setTimeout
 setTimeout(function scrollEvent() {
   document.addEventListener("scroll", function () {
-    section1Bound = section1.getBoundingClientRect();
-    section2Bound = section2.getBoundingClientRect();
-    section3Bound = section3.getBoundingClientRect();
-
-    if (section1Bound.top >= 0 && section1Bound.top <= 100) {
-      navLink1.classList.add("active-nav");
-      navLink1.classList.remove("menu__link");
-      navLink2.classList.remove("active-nav");
-      navLink2.classList.add("menu__link");
-      navLink3.classList.remove("active-nav");
-      navLink3.classList.add("menu__link");
-
-      if (section1.classList.contains("active")) {
-        return;
-      } else {
-        section1.classList.add("active");
-        section2.classList.remove("active");
-        section3.classList.remove("active");
+    for (section of allSections) {
+      if (headerNearTop(section)) {
+        for (navLink of navLinks) {
+          if (
+            navLink.getAttribute("data-nav", `Section ${navLink + 1}`) ===
+            section.getAttribute("data-nav", `Section ${navLink + 1}`)
+          ) {
+            navLink.classList.add("active-nav");
+            navLink.classList.remove("menu__link");
+          } else {
+            if (
+              navLink.getAttribute("data-nav", `Section ${navLink + 1}`) !==
+              section.getAttribute("data-nav", `Section ${navLink + 1}`)
+            ) {
+              navLink.classList.add("menu__link");
+              navLink.classList.remove("active-nav");
+            }
+          }
+        }
       }
-    }
-    if (section2Bound.top >= 0 && section2Bound.top <= 100) {
-      navLink1.classList.remove("active-nav");
-      navLink1.classList.add("menu__link");
-      navLink2.classList.add("active-nav");
-      navLink2.classList.remove("menu__link");
-      navLink3.classList.remove("active-nav");
-      navLink3.classList.add("menu__link");
-
-      if (section2.classList.contains("active")) {
-        return;
+      if (isVisible(section)) {
+        section.classList.add("active");
       } else {
-        section1.classList.remove("active");
-        section2.classList.add("active");
-        section3.classList.remove("active");
-      }
-    }
-    if (section3Bound.top >= 0 && section3Bound.top <= 100) {
-      navLink1.classList.remove("active-nav");
-      navLink1.classList.add("menu__link");
-      navLink2.classList.remove("active-nav");
-      navLink2.classList.add("menu__link");
-      navLink3.classList.add("active-nav");
-      navLink3.classList.remove("menu__link");
-
-      if (section3.classList.contains("active")) {
-        return;
-      } else {
-        section1.classList.remove("active");
-        section2.classList.remove("active");
-        section3.classList.add("active");
+        section.classList.remove("active");
       }
     }
   });
 }, 0);
 
-/**
- * End Global Variables
- * Start Helper Functions
- *
- */
+// click event for nav item to scroll section into view
+nav.addEventListener("click", function (evt) {
+  const navData = evt.target.getAttribute("data-nav");
+  let sectionData = "";
+  for (section of allSections) {
+    sectionData = section.getAttribute("data-nav");
 
-/**
- * End Helper Functions
- * Begin Main Functions
- *
- */
-
-// Scroll to anchor ID using scrollTO event
-
-// Add class 'active' to section when near top of viewport
-
-// Scroll to section on link click
-
-/**
- * End Main Functions
- * Begin Events
- *
- */
-
-// Build menu
-
-// Set sections as active
+    if (navData === sectionData) {
+      section.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }
+});
