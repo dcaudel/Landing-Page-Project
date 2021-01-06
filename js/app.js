@@ -13,11 +13,6 @@
  *
  */
 
-/**
- * Define Global Variables
- *
- */
-
 // Reset page on refresh: Scrolls to top, and selects section 1 in nav
 window.onload = function () {
   window.scroll({
@@ -70,7 +65,7 @@ function isVisible(el) {
 // Checks if top of section is near top of viewport
 function headerNearTop(el) {
   const rect = el.getBoundingClientRect();
-  const headerNearTop = rect.top >= 0 && rect.top <= 100;
+  const headerNearTop = rect.top >= -300 && rect.top <= 400;
 
   return headerNearTop;
 }

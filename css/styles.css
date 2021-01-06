@@ -240,3 +240,15 @@ section.active .landing__container::after {
     transform: rotate(360deg) translate(-1em) rotate(-360deg);
   }
 }
+
+/* Makes the nav a little smaller on small screens. If this were a real-world scenario, I'd make it a hambuger menu.*/
+@media (max-width: 600px) {
+  .navbar__menu .menu__link {
+    font-size: 0.75em;
+    padding: 1em 0.5em 1em 0.5em;
+  }
+  .active-nav {
+    font-size: 0.75em;
+    padding: 1em 0.5em 1em 0.5em;
+  }
+}
